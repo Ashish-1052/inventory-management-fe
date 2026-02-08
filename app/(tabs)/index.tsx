@@ -6,8 +6,16 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
+import { useItems } from '../src/hooks/useItems';
+import { useAuthStore } from '../src/store/authStore';
+import { Button } from '@react-navigation/elements';
 
 export default function HomeScreen() {
+  const token = useAuthStore((s) => s.token);
+  console.log(token);
+  const { data, isPending, error } = useItems();
+  console.log('useitems', { data, isPending, error });
+  const logout = useAuthStore((s) => s.logout);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -21,6 +29,7 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome to Inventory Management!</ThemedText>
         <HelloWave />
       </ThemedView>
+      <Button onPress={logout}>Logout</Button>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
