@@ -20,6 +20,9 @@
       ],
       "@utils/*": [
         "./utils/*"
+      ],
+      "tailwind.config": [
+        "./tailwind.config.js"
       ]
     }
   },
