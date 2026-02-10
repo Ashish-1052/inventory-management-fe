@@ -7,6 +7,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useState } from 'react';
 import { addItem } from '../src/api/items';
 import { useRouter } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function AddItemScreen() {
   const colorScheme = useColorScheme();
@@ -14,17 +15,21 @@ export default function AddItemScreen() {
   const [sku, setSku] = useState("");
   const [quantity, setQuantity] = useState("");
   const [minQuantity, setMinQuantity] = useState("");
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: addItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['items'] });
+      router.replace('/');
+    },
+  });
+
+  const handleSubmit = () => {
+    mutation.mutate({ name, sku, quantity: Number(quantity), minQuantity: Number(minQuantity) });
+  };
 
   const router = useRouter();
-  const handleAddItem = async () => {
-    try {
-      const data = await addItem({ name, sku, quantity: Number(quantity), minQuantity: Number(minQuantity) });
-      console.log('~ data', data);
-      router.replace("/(tabs)");
-    } catch {
-      alert("Invalid credentials");
-    }
-  };
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -65,7 +70,7 @@ export default function AddItemScreen() {
         style={{ borderWidth: 1, marginBottom: 20, borderColor: "gray", color: colorScheme === "dark" ? "white" : "black", borderRadius: 5, padding: 5, }}
       />
 
-      <Button title="Add Item" onPress={handleAddItem} />
+      <Button title="Add Item" onPress={handleSubmit} />
     </ParallaxScrollView>
   );
 }
